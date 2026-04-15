@@ -1,9 +1,7 @@
 package app;
-
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
-
 class UseCase12TrainConsistMgmntTest {
 
     @Test

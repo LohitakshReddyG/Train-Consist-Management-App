@@ -42,7 +42,6 @@ class UseCase12TrainConsistMgmntTest {
 
         assertFalse(TrainConsistApp.isSafe(list));
     }
-
     @Test
     void testSafety_EmptyBogieList() {
         List<TrainConsistApp.GoodsBogie> list = new ArrayList<>();
