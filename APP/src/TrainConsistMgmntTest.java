@@ -1,53 +1,39 @@
 package app;
 
-import org.junit.jupiter.api.Test;
+public class TrainConsistApp {
 
-import static org.junit.jupiter.api.Assertions.*;
+    // Linear Search method
+    public static boolean linearSearch(String[] arr, String key) {
+        if (arr == null || key == null) return false;
 
-class UseCase16TrainConsistMgmntTest {
-
-    @Test
-    void testSort_BasicSorting() {
-        int[] arr = {72, 56, 24, 70, 60};
-
-        TrainConsistApp.bubbleSort(arr);
-
-        assertArrayEquals(new int[]{24, 56, 60, 70, 72}, arr);
+        for (String id : arr) {
+            if (key.equals(id)) {   // safe string comparison
+                return true;        // found → stop early
+            }
+        }
+        return false; // not found
     }
 
-    @Test
-    void testSort_AlreadySortedArray() {
-        int[] arr = {24, 56, 60, 70, 72};
+    public static void main(String[] args) {
 
-        TrainConsistApp.bubbleSort(arr);
+        System.out.println("UC18 - Linear Search for Bogie ID\n");
 
-        assertArrayEquals(new int[]{24, 56, 60, 70, 72}, arr);
-    }
+        String[] bogieIds = {"BG101", "BG205", "BG309", "BG412", "BG550"};
+        String searchId = "BG309";
 
-    @Test
-    void testSort_DuplicateValues() {
-        int[] arr = {72, 56, 56, 24};
+        System.out.println("Available Bogie IDs:");
+        for (String id : bogieIds) {
+            System.out.println(id);
+        }
 
-        TrainConsistApp.bubbleSort(arr);
+        boolean found = linearSearch(bogieIds, searchId);
 
-        assertArrayEquals(new int[]{24, 56, 56, 72}, arr);
-    }
+        if (found) {
+            System.out.println("\nBogie " + searchId + " found in train consist.");
+        } else {
+            System.out.println("\nBogie " + searchId + " NOT found.");
+        }
 
-    @Test
-    void testSort_SingleElementArray() {
-        int[] arr = {50};
-
-        TrainConsistApp.bubbleSort(arr);
-
-        assertArrayEquals(new int[]{50}, arr);
-    }
-
-    @Test
-    void testSort_AllEqualValues() {
-        int[] arr = {40, 40, 40};
-
-        TrainConsistApp.bubbleSort(arr);
-
-        assertArrayEquals(new int[]{40, 40, 40}, arr);
+        System.out.println("\nUC18 search completed ...");
     }
 }
