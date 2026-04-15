@@ -1,4 +1,4 @@
-package APP;
+package app;
 
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
@@ -42,6 +42,7 @@ class UseCase12TrainConsistMgmntTest {
 
         assertFalse(TrainConsistApp.isSafe(list));
     }
+
     @Test
     void testSafety_EmptyBogieList() {
         List<TrainConsistApp.GoodsBogie> list = new ArrayList<>();

@@ -1,46 +1,63 @@
-import org.junit.jupiter.api.Test;
+package app;
+
 import java.util.ArrayList;
 import java.util.List;
-class UseCase12TrainConsistMgmntTest {
 
-    @Test
-    void testSafety_AllBogiesValid() {
-        List<TrainConsistApp.GoodsBogie> list = new ArrayList<>();
-        list.add(new TrainConsistApp.GoodsBogie("Cylindrical", "Petroleum"));
-        list.add(new TrainConsistApp.GoodsBogie("Open", "Coal"));
+public class TrainConsistApp {
 
-        assertTrue(TrainConsistApp.isSafe(list));
+    // Goods Bogie model
+    public static class GoodsBogie {
+        private final String type;
+        private final String cargo;
+
+        public GoodsBogie(String type, String cargo) {
+            this.type = type;
+            this.cargo = cargo;
+        }
+
+        public String getType() { return type; }
+        public String getCargo() { return cargo; }
+
+        @Override
+        public String toString() {
+            return type + " -> " + cargo;
+        }
     }
 
-    @Test
-    void testSafety_CylindricalWithInvalidCargo() {
-        List<TrainConsistApp.GoodsBogie> list = new ArrayList<>();
-        list.add(new TrainConsistApp.GoodsBogie("Cylindrical", "Coal"));
+    // UC12 Safety validation method
+    public static boolean isSafe(List<GoodsBogie> bogies) {
+        if (bogies == null) return true;
 
-        assertFalse(TrainConsistApp.isSafe(list));
+        return bogies.stream().allMatch(b ->
+                !b.getType().equalsIgnoreCase("Cylindrical") ||
+                        b.getCargo().equalsIgnoreCase("Petroleum")
+        );
     }
 
-    @Test
-    void testSafety_NonCylindricalBogiesAllowed() {
-        List<TrainConsistApp.GoodsBogie> list = new ArrayList<>();
-        list.add(new TrainConsistApp.GoodsBogie("Open", "Coal"));
-        list.add(new TrainConsistApp.GoodsBogie("Box", "Grain"));
+    public static void main(String[] args) {
 
-        assertTrue(TrainConsistApp.isSafe(list));
-    }
+        System.out.println("UC12 - Safety Compliance Check for Goods Bogies\n");
 
-    @Test
-    void testSafety_MixedBogiesWithViolation() {
-        List<TrainConsistApp.GoodsBogie> list = new ArrayList<>();
-        list.add(new TrainConsistApp.GoodsBogie("Cylindrical", "Petroleum"));
-        list.add(new TrainConsistApp.GoodsBogie("Cylindrical", "Coal"));
+        List<GoodsBogie> goodsBogies = new ArrayList<>();
 
-        assertFalse(TrainConsistApp.isSafe(list));
-    }
+        goodsBogies.add(new GoodsBogie("Cylindrical", "Petroleum"));
+        goodsBogies.add(new GoodsBogie("Open", "Coal"));
+        goodsBogies.add(new GoodsBogie("Box", "Grain"));
+        goodsBogies.add(new GoodsBogie("Cylindrical", "Coal")); // invalid
 
-    @Test
-    void testSafety_EmptyBogieList() {
-        List<TrainConsistApp.GoodsBogie> list = new ArrayList<>();
-        assertTrue(TrainConsistApp.isSafe(list));
+        System.out.println("Goods Bogies in Train:");
+        goodsBogies.forEach(System.out::println);
+
+        boolean safe = isSafe(goodsBogies);
+
+        System.out.println("\nSafety Compliance Status: " + safe);
+
+        if (safe) {
+            System.out.println("Train formation is SAFE.");
+        } else {
+            System.out.println("Train formation is NOT SAFE.");
+        }
+
+        System.out.println("\nUC12 safety validation completed ...");
     }
 }
