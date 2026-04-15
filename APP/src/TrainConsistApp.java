@@ -1,49 +1,78 @@
 package app;
 
-import java.util.Scanner;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TrainConsistApp {
 
-    // Regex patterns
-    private static final Pattern TRAIN_ID_PATTERN = Pattern.compile("TRN-\\d{4}");
-    private static final Pattern CARGO_CODE_PATTERN = Pattern.compile("PET-[A-Z]{2}");
+    // Bogie model
+    public static class Bogie {
+        private final String type;
+        private final int capacity;
 
-    // Validation methods (needed for test cases)
-    public static boolean isValidTrainId(String trainId) {
-        if (trainId == null || trainId.isEmpty()) return false;
-        return TRAIN_ID_PATTERN.matcher(trainId).matches();
+        public Bogie(String type, int capacity) {
+            this.type = type;
+            this.capacity = capacity;
+        }
+
+        public String getType() { return type; }
+        public int getCapacity() { return capacity; }
+
+        @Override
+        public String toString() {
+            return type + " -> " + capacity;
+        }
     }
 
-    public static boolean isValidCargoCode(String cargoCode) {
-        if (cargoCode == null || cargoCode.isEmpty()) return false;
-        return CARGO_CODE_PATTERN.matcher(cargoCode).matches();
+    // Loop-based filtering
+    public static List<Bogie> filterWithLoop(List<Bogie> bogies) {
+        List<Bogie> result = new ArrayList<>();
+        if (bogies == null) return result;
+
+        for (Bogie b : bogies) {
+            if (b.getCapacity() > 60) {
+                result.add(b);
+            }
+        }
+        return result;
+    }
+
+    // Stream-based filtering
+    public static List<Bogie> filterWithStream(List<Bogie> bogies) {
+        if (bogies == null) return new ArrayList<>();
+
+        return bogies.stream()
+                .filter(b -> b.getCapacity() > 60)
+                .collect(Collectors.toList());
     }
 
     public static void main(String[] args) {
 
-        Scanner scanner = new Scanner(System.in);
+        System.out.println("UC13 - Performance Comparison (Loops vs Streams)\n");
 
-        System.out.println("UC11 - Validate Train ID and Cargo Code\n");
+        // Create large dataset
+        List<Bogie> bogies = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            bogies.add(new Bogie("Type" + i, (i % 100) + 1));
+        }
 
-        // Input
-        System.out.print("Enter Train ID (Format: TRN-1234): ");
-        String trainId = scanner.nextLine();
+        // Loop timing
+        long startLoop = System.nanoTime();
+        List<Bogie> loopResult = filterWithLoop(bogies);
+        long endLoop = System.nanoTime();
 
-        System.out.print("Enter Cargo Code (Format: PET-AB): ");
-        String cargoCode = scanner.nextLine();
+        // Stream timing
+        long startStream = System.nanoTime();
+        List<Bogie> streamResult = filterWithStream(bogies);
+        long endStream = System.nanoTime();
 
-        // Validation
-        boolean trainValid = isValidTrainId(trainId);
-        boolean cargoValid = isValidCargoCode(cargoCode);
+        long loopTime = endLoop - startLoop;
+        long streamTime = endStream - startStream;
 
-        // Output
-        System.out.println("\nValidation Results:");
-        System.out.println("Train ID Valid: " + trainValid);
-        System.out.println("Cargo Code Valid: " + cargoValid);
+        System.out.println("Loop Execution Time (ns): " + loopTime);
+        System.out.println("Stream Execution Time (ns): " + streamTime);
 
-        System.out.println("\nUC11 validation completed ...");
-
-        scanner.close();
+        System.out.println("\nUC13 performance benchmarking completed ...");
     }
 }

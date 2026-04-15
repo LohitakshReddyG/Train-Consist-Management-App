@@ -1,55 +1,77 @@
 package app;
 
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-class UseCase11TrainConsistMgmntTest {
+class UseCase13TrainConsistMgmntTest {
 
     @Test
-    void testRegex_ValidTrainID() {
-        assertTrue(TrainConsistApp.isValidTrainId("TRN-1234"));
+    void testLoopFilteringLogic() {
+        List<TrainConsistApp.Bogie> list = new ArrayList<>();
+        list.add(new TrainConsistApp.Bogie("A", 50));
+        list.add(new TrainConsistApp.Bogie("B", 70));
+
+        List<TrainConsistApp.Bogie> result = TrainConsistApp.filterWithLoop(list);
+
+        assertEquals(1, result.size());
+        assertTrue(result.get(0).getCapacity() > 60);
     }
 
     @Test
-    void testRegex_InvalidTrainIDFormat() {
-        assertFalse(TrainConsistApp.isValidTrainId("TRAIN12"));
-        assertFalse(TrainConsistApp.isValidTrainId("TRN12A"));
-        assertFalse(TrainConsistApp.isValidTrainId("1234-TRN"));
+    void testStreamFilteringLogic() {
+        List<TrainConsistApp.Bogie> list = new ArrayList<>();
+        list.add(new TrainConsistApp.Bogie("A", 40));
+        list.add(new TrainConsistApp.Bogie("B", 80));
+
+        List<TrainConsistApp.Bogie> result = TrainConsistApp.filterWithStream(list);
+
+        assertEquals(1, result.size());
+        assertTrue(result.get(0).getCapacity() > 60);
     }
 
     @Test
-    void testRegex_ValidCargoCode() {
-        assertTrue(TrainConsistApp.isValidCargoCode("PET-AB"));
+    void testLoopAndStreamResultsMatch() {
+        List<TrainConsistApp.Bogie> list = new ArrayList<>();
+        list.add(new TrainConsistApp.Bogie("A", 30));
+        list.add(new TrainConsistApp.Bogie("B", 90));
+        list.add(new TrainConsistApp.Bogie("C", 70));
+
+        List<TrainConsistApp.Bogie> loopResult = TrainConsistApp.filterWithLoop(list);
+        List<TrainConsistApp.Bogie> streamResult = TrainConsistApp.filterWithStream(list);
+
+        assertEquals(loopResult.size(), streamResult.size());
     }
 
     @Test
-    void testRegex_InvalidCargoCodeFormat() {
-        assertFalse(TrainConsistApp.isValidCargoCode("PET-ab"));
-        assertFalse(TrainConsistApp.isValidCargoCode("PET123"));
-        assertFalse(TrainConsistApp.isValidCargoCode("AB-PET"));
+    void testExecutionTimeMeasurement() {
+        List<TrainConsistApp.Bogie> list = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            list.add(new TrainConsistApp.Bogie("X", i));
+        }
+
+        long start = System.nanoTime();
+        TrainConsistApp.filterWithLoop(list);
+        long end = System.nanoTime();
+
+        long elapsed = end - start;
+
+        assertTrue(elapsed > 0);
     }
 
     @Test
-    void testRegex_TrainIDDigitLengthValidation() {
-        assertFalse(TrainConsistApp.isValidTrainId("TRN-123"));
-        assertFalse(TrainConsistApp.isValidTrainId("TRN-12345"));
-    }
+    void testLargeDatasetProcessing() {
+        List<TrainConsistApp.Bogie> list = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            list.add(new TrainConsistApp.Bogie("X", i % 100));
+        }
 
-    @Test
-    void testRegex_CargoCodeUppercaseValidation() {
-        assertFalse(TrainConsistApp.isValidCargoCode("PET-Ab"));
-        assertFalse(TrainConsistApp.isValidCargoCode("PET-aB"));
-    }
+        List<TrainConsistApp.Bogie> result = TrainConsistApp.filterWithStream(list);
 
-    @Test
-    void testRegex_EmptyInputHandling() {
-        assertFalse(TrainConsistApp.isValidTrainId(""));
-        assertFalse(TrainConsistApp.isValidCargoCode(""));
-    }
-
-    @Test
-    void testRegex_ExactPatternMatch() {
-        assertFalse(TrainConsistApp.isValidTrainId("TRN-1234X"));
-        assertFalse(TrainConsistApp.isValidCargoCode("PET-ABC"));
+        assertNotNull(result);
+        assertTrue(result.size() > 0);
     }
 }
